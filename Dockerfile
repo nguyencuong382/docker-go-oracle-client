@@ -1,4 +1,4 @@
-FROM golang:1.18
+FROM golang:1.21.1
 
 ARG USERNAME=go
 ARG USER_UID=1000
@@ -23,6 +23,7 @@ ADD instantclient-sdk-linux.x64-*.zip ./
 RUN apt-get update && apt-get install -y --no-install-recommends \
 		unzip \
         libaio1 \
+        make \
         && rm -rf /var/lib/apt/lists/*
 
 # Unzip instant client.
