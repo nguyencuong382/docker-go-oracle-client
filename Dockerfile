@@ -1,37 +1,28 @@
-FROM golang:1.21.1
+FROM golang:1.21-alpine3.18
 
 ARG USERNAME=go
 ARG USER_UID=1000
 ARG USER_GID=$USER_UID
 
 # Create the user
-RUN groupadd --gid $USER_GID $USERNAME \
-    && useradd --uid $USER_UID --gid $USER_GID -m $USERNAME \
-    #
-    # [Optional] Add sudo support. Omit if you don't need to install software after connecting.
-    && apt-get update \
-    && apt-get install -y sudo \
-    && echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME \
-    && chmod 0440 /etc/sudoers.d/$USERNAME
+RUN addgroup -S ${USER_GID} && adduser -S ${USERNAME} -G ${USER_GID}
+
+RUN apk --no-cache add libaio libnsl libc6-compat curl bash && \
+    cd /tmp && \
+    curl -o instantclient-basiclite.zip https://download.oracle.com/otn_software/linux/instantclient/instantclient-basiclite-linuxx64.zip -SL && \
+    unzip instantclient-basiclite.zip && \
+    mv instantclient*/ /usr/lib/instantclient && \
+    rm instantclient-basiclite.zip && \
+    ln -s /usr/lib/instantclient/libclntsh.so.19.1 /usr/lib/libclntsh.so && \
+    ln -s /usr/lib/instantclient/libocci.so.19.1 /usr/lib/libocci.so && \
+    ln -s /usr/lib/instantclient/libociicus.so /usr/lib/libociicus.so && \
+    ln -s /usr/lib/instantclient/libnnz19.so /usr/lib/libnnz19.so && \
+    ln -s /usr/lib/libnsl.so.2 /usr/lib/libnsl.so.1 && \
+    ln -s /lib/libc.so.6 /usr/lib/libresolv.so.2 && \
+    ln -s /lib64/ld-linux-x86-64.so.2 /usr/lib/ld-linux-x86-64.so.2
 
 
-# Required for building the Oracle DB driver
-ADD oci8.pc /usr/lib/pkgconfig/oci8.pc
-ADD instantclient-basic-linux.x64-*.zip ./
-ADD instantclient-sdk-linux.x64-*.zip ./
-
-RUN apt-get update && apt-get install -y --no-install-recommends \
-		unzip \
-        libaio1 \
-        make \
-        && rm -rf /var/lib/apt/lists/*
-
-# Unzip instant client.
-RUN unzip instantclient-basic-linux.x64-*.zip -d / \
-    && unzip instantclient-sdk-linux.x64-*.zip -d / \
-    && ln -s /instantclient_11_2/libclntsh.so.11.1 /instantclient_11_2/libclntsh.so
-
-# The package config doesn't seem to be enough, this is also required.
-ENV LD_LIBRARY_PATH /instantclient_11_2
-
-USER $USERNAME
+ENV ORACLE_BASE /usr/lib/instantclient
+ENV LD_LIBRARY_PATH /usr/lib/instantclient
+ENV TNS_ADMIN /usr/lib/instantclient
+ENV ORACLE_HOME /usr/lib/instantclient
