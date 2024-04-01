@@ -1,8 +1,18 @@
 version: "3"
 
 services:
-  golang-oracle-linux:
-    image: nguyencuong382/golang-oracle-linux-unprivileged:1.21-alpine3.18-x64.11.2
+  # golang-oracle-linux:
+  #   image: nguyencuong382/golang-oracle-linux-unprivileged:1.21-alpine3.18-x64.11.2
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  # golang-oracle-linux-java:
+  #   image: nguyencuong382/golang-oracle-linux-unprivileged-java:1.21-alpine3.18-x64.11.2-j8-mvn
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile.java
+  golang-oracle-linux-java:
+    image: nguyencuong382/golang-oracle-linux-unprivileged-mvn:1.21-alpine3.18-x64.11.2-j8-mvn
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.java.mvn
