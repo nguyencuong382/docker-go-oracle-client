@@ -1,0 +1,51 @@
+FROM alpine:3.18
+
+# Java Version and other ENV
+# ENV JAVA_VERSION_MAJOR=8 \
+#     JAVA_VERSION_MINOR=151 \
+#     JAVA_VERSION_BUILD=12 \
+#     JAVA_PACKAGE=jdk \
+#     JAVA_JCE=standard \
+#     JAVA_HOME=/opt/jdk \
+#     PATH=${PATH}:/opt/jdk/bin \
+#     GLIBC_VERSION=2.23-r3 \
+#     LANG=C.UTF-8
+
+RUN apk --no-cache add libaio libnsl libc6-compat curl bash openjdk8-jre && \
+    cd /tmp && \
+    curl -o instantclient-basiclite.zip https://download.oracle.com/otn_software/linux/instantclient/instantclient-basiclite-linuxx64.zip -SL && \
+    unzip instantclient-basiclite.zip && \
+    mv instantclient*/ /usr/lib/instantclient && \
+    rm instantclient-basiclite.zip && \
+    ln -s /usr/lib/instantclient/libclntsh.so.19.1 /usr/lib/libclntsh.so && \
+    ln -s /usr/lib/instantclient/libocci.so.19.1 /usr/lib/libocci.so && \
+    ln -s /usr/lib/instantclient/libociicus.so /usr/lib/libociicus.so && \
+    ln -s /usr/lib/instantclient/libnnz19.so /usr/lib/libnnz19.so && \
+    ln -s /usr/lib/libnsl.so.2 /usr/lib/libnsl.so.1 && \
+    ln -s /lib/libc.so.6 /usr/lib/libresolv.so.2 && \
+    ln -s /lib64/ld-linux-x86-64.so.2 /usr/lib/ld-linux-x86-64.so.2
+
+# RUN set -ex && \
+#     apk upgrade --update && \
+#     apk add --update libstdc++ ca-certificates && \
+#     for pkg in glibc-${GLIBC_VERSION} glibc-bin-${GLIBC_VERSION} glibc-i18n-${GLIBC_VERSION}; do curl -sSL https://github.com/andyshinn/alpine-pkg-glibc/releases/download/${GLIBC_VERSION}/${pkg}.apk -o /tmp/${pkg}.apk; done && \
+#     apk add --allow-untrusted /tmp/*.apk && \
+#     rm -v /tmp/*.apk && \
+#     ( /usr/glibc-compat/bin/localedef --force --inputfile POSIX --charmap UTF-8 C.UTF-8 || true ) && \
+#     echo "export LANG=C.UTF-8" > /etc/profile.d/locale.sh && \
+#     /usr/glibc-compat/sbin/ldconfig /lib /usr/glibc-compat/lib
+
+ENV ORACLE_BASE /usr/lib/instantclient
+ENV LD_LIBRARY_PATH /usr/lib/instantclient
+ENV TNS_ADMIN /usr/lib/instantclient
+ENV ORACLE_HOME /usr/lib/instantclient
+
+
+ENV MAVEN_VERSION 3.5.4
+ENV MAVEN_HOME /usr/lib/mvn
+ENV PATH $MAVEN_HOME/bin:$PATH
+
+RUN wget http://archive.apache.org/dist/maven/maven-3/$MAVEN_VERSION/binaries/apache-maven-$MAVEN_VERSION-bin.tar.gz && \
+  tar -zxvf apache-maven-$MAVEN_VERSION-bin.tar.gz && \
+  rm apache-maven-$MAVEN_VERSION-bin.tar.gz && \
+  mv apache-maven-$MAVEN_VERSION /usr/lib/mvn
