@@ -1,15 +1,11 @@
-FROM alpine:3.18
+FROM golang:1.21-alpine3.18
 
-# Java Version and other ENV
-# ENV JAVA_VERSION_MAJOR=8 \
-#     JAVA_VERSION_MINOR=151 \
-#     JAVA_VERSION_BUILD=12 \
-#     JAVA_PACKAGE=jdk \
-#     JAVA_JCE=standard \
-#     JAVA_HOME=/opt/jdk \
-#     PATH=${PATH}:/opt/jdk/bin \
-#     GLIBC_VERSION=2.23-r3 \
-#     LANG=C.UTF-8
+ARG USERNAME=go
+ARG USER_UID=1000
+ARG USER_GID=$USER_UID
+
+# Create the user
+RUN addgroup -S ${USER_GID} && adduser -S ${USERNAME} -G ${USER_GID}
 
 RUN apk --no-cache add libaio libnsl libc6-compat curl bash openjdk8-jre && \
     cd /tmp && \
@@ -25,15 +21,38 @@ RUN apk --no-cache add libaio libnsl libc6-compat curl bash openjdk8-jre && \
     ln -s /lib/libc.so.6 /usr/lib/libresolv.so.2 && \
     ln -s /lib64/ld-linux-x86-64.so.2 /usr/lib/ld-linux-x86-64.so.2
 
-# RUN set -ex && \
-#     apk upgrade --update && \
-#     apk add --update libstdc++ ca-certificates && \
-#     for pkg in glibc-${GLIBC_VERSION} glibc-bin-${GLIBC_VERSION} glibc-i18n-${GLIBC_VERSION}; do curl -sSL https://github.com/andyshinn/alpine-pkg-glibc/releases/download/${GLIBC_VERSION}/${pkg}.apk -o /tmp/${pkg}.apk; done && \
-#     apk add --allow-untrusted /tmp/*.apk && \
-#     rm -v /tmp/*.apk && \
-#     ( /usr/glibc-compat/bin/localedef --force --inputfile POSIX --charmap UTF-8 C.UTF-8 || true ) && \
-#     echo "export LANG=C.UTF-8" > /etc/profile.d/locale.sh && \
-#     /usr/glibc-compat/sbin/ldconfig /lib /usr/glibc-compat/lib
+RUN rm -rf /usr/lib/jvm/java-17-openjdk/*src.zip \
+    /usr/lib/jvm/java-17-openjdk/lib/missioncontrol \
+    /usr/lib/jvm/java-17-openjdk/lib/visualvm \
+    /usr/lib/jvm/java-17-openjdk/lib/*javafx* \
+    /usr/lib/jvm/java-17-openjdk/jre/plugin \
+    /usr/lib/jvm/java-17-openjdk/jre/bin/javaws \
+    /usr/lib/jvm/java-17-openjdk/jre/bin/jjs \
+    /usr/lib/jvm/java-17-openjdk/jre/bin/orbd \
+    /usr/lib/jvm/java-17-openjdk/jre/bin/pack200 \
+    /usr/lib/jvm/java-17-openjdk/jre/bin/policytool \
+    /usr/lib/jvm/java-17-openjdk/jre/bin/rmid \
+    /usr/lib/jvm/java-17-openjdk/jre/bin/rmiregistry \
+    /usr/lib/jvm/java-17-openjdk/jre/bin/servertool \
+    /usr/lib/jvm/java-17-openjdk/jre/bin/tnameserv \
+    /usr/lib/jvm/java-17-openjdk/jre/bin/unpack200 \
+    /usr/lib/jvm/java-17-openjdk/jre/lib/javaws.jar \
+    /usr/lib/jvm/java-17-openjdk/jre/lib/deploy* \
+    /usr/lib/jvm/java-17-openjdk/jre/lib/desktop \
+    /usr/lib/jvm/java-17-openjdk/jre/lib/*javafx* \
+    /usr/lib/jvm/java-17-openjdk/jre/lib/*jfx* \
+    /usr/lib/jvm/java-17-openjdk/jre/lib/amd64/libdecora_sse.so \
+    /usr/lib/jvm/java-17-openjdk/jre/lib/amd64/libprism_*.so \
+    /usr/lib/jvm/java-17-openjdk/jre/lib/amd64/libfxplugins.so \
+    /usr/lib/jvm/java-17-openjdk/jre/lib/amd64/libglass.so \
+    /usr/lib/jvm/java-17-openjdk/jre/lib/amd64/libgstreamer-lite.so \
+    /usr/lib/jvm/java-17-openjdk/jre/lib/amd64/libjavafx*.so \
+    /usr/lib/jvm/java-17-openjdk/jre/lib/amd64/libjfx*.so \
+    /usr/lib/jvm/java-17-openjdk/jre/lib/ext/jfxrt.jar \
+    /usr/lib/jvm/java-17-openjdk/jre/lib/ext/nashorn.jar \
+    /usr/lib/jvm/java-17-openjdk/jre/lib/oblique-fonts \
+    /usr/lib/jvm/java-17-openjdk/jre/lib/plugin.jar \
+    /tmp/* /var/cache/apk/*
 
 ENV ORACLE_BASE /usr/lib/instantclient
 ENV LD_LIBRARY_PATH /usr/lib/instantclient

@@ -1,6 +1,13 @@
-FROM alpine:3.20
+FROM golang:1.21-alpine3.18
 
-RUN apk --no-cache add curl bash openjdk8-jre
+ARG USERNAME=go
+ARG USER_UID=1000
+ARG USER_GID=$USER_UID
+
+# Create the user
+RUN addgroup -S ${USER_GID} && adduser -S ${USERNAME} -G ${USER_GID}
+
+RUN apk --no-cache add libaio libnsl libc6-compat curl bash openjdk8-jre
 
 ENV MAVEN_VERSION 3.5.4
 ENV MAVEN_HOME /usr/lib/mvn
