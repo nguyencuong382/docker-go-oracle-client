@@ -1,0 +1,7 @@
+version: "3"
+
+services:
+  alpine-oracle:
+    image: nguyencuong382/nginx:1.26.3-alpine-slim
+    build:
+      context: .

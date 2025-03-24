@@ -1,0 +1,8 @@
+version: "3"
+
+services:
+  alpine-go-oracle:
+    image: nguyencuong382/go-oracle-unprivileged:alpine3.20-x64.21.16
+    build:
+      context: .
+      dockerfile: Dockerfile
