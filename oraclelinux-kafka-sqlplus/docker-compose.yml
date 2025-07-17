@@ -1,0 +1,5 @@
+services:
+  oraclelinux-kafka-sqlplus:
+    image: nguyencuong382/oraclelinux-kafka-sqlplus:8-slim-2.10.1-21
+    build:
+      context: .

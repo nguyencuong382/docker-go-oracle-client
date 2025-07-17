@@ -1,0 +1,5 @@
+services:
+  oraclelinux-kafka:
+    image: nguyencuong382/oraclelinux-kafka:8-slim-2.10.1
+    build:
+      context: .

@@ -1,0 +1,5 @@
+services:
+  oraclelinux-go-kafka:
+    image: nguyencuong382/oraclelinux-go-kafka:8-slim-1.23.3-2.10.1
+    build:
+      context: .
