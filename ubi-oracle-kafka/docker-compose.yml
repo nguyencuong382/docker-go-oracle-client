@@ -1,0 +1,5 @@
+services:
+  oraclelinux-kafka:
+    image: reg.aiontech.vn/redhat/redhat-ubi-oracle-kafka:10.1-8-2.10.1-1
+    build:
+      context: .
