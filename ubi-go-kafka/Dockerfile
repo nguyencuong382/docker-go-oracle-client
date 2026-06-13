@@ -18,7 +18,7 @@ RUN microdnf install -y tar gzip \
 
 # ========================================================= Download Go =========================================================
 # Set Go version
-ENV GO_VERSION=1.24.6
+ENV GO_VERSION=1.26.4
 
 # Download and install Go
 RUN curl -LO https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz && \

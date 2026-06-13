@@ -1,6 +1,7 @@
 services:
   oraclelinux-go-kafka:
     # image: nguyencuong382/redhat-ubi-go-kafka:8-10-1.23.3-2.10.1
-    image: reg.aiontech.vn/redhat/redhat-ubi-go-kafka:10.1-1.24.6-2.10.1
+    # image: reg.aiontech.vn/redhat/redhat-ubi-go-kafka:10.1-1.24.6-2.10.1
+    image: reg.aiontech.vn/redhat/redhat-ubi-go-kafka:10.1-1.26.4-2.10.1
     build:
       context: .
